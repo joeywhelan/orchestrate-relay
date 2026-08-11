@@ -5,7 +5,7 @@
 
 In this article, I demonstrate the integration of [ServiceNow](https://www.servicenow.com/) with Elastic via the [Elastic ServiceNow connector](https://www.elastic.co/docs/reference/search-connectors/es-connectors-servicenow). I create an ES|QL MCP tool in Elastic Agent Builder that is then used to perform a query from an [IBM watsonx Orchestrate](https://www.ibm.com/products/watsonx-orchestrate) agent.
 
-I perform all infrastructure provisioning via Terraform: [Elastic Serverless](https://www.elastic.co/docs/deploy-manage/deploy/elastic-cloud/serverless) and an AWS VM for the Elastic Connector. I configure the Orchestrate agent environment via the ADK CLI. All the above is executed step by step in a Jupyter notebook.
+I perform all infrastructure provisioning via Terraform: [Elastic Serverless](https://www.elastic.co/docs/deploy-manage/deploy/elastic-cloud/serverless) and an AWS VM for the Elastic Connector. I configure the Orchestrate agent environment via the ADK CLI. All of the above is executed step by step in a Jupyter notebook.
 
 ---
 
