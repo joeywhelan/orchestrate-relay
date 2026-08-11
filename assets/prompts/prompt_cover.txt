@@ -1,0 +1,27 @@
+# Semantic ServiceNow Search via MCP LinkedIn Cover Design Specification
+
+A stylised LinkedIn cover image — bold, visual, and marketing-oriented. Not an architecture diagram. The composition communicates partnership and data flow through visual metaphor rather than labeled boxes and arrows.
+
+**Canvas:** 1200 × 627 px (LinkedIn article share ratio, 1.91:1), dark charcoal background (#0D1117) with a subtle radial glow or depth gradient behind the central element.
+
+**Framing:** All four brand marks and the EC2 element must sit fully within the frame with at least 10% clear margin on the left and right edges, and 5% on top and bottom. Nothing may touch or cross a border. LinkedIn crops cover images when rendering — generous horizontal margins are required to keep all logos visible.
+
+**Core Concept:**
+Four brand logos arranged in a flowing left-to-right arc, connected by glowing particle streams or light trails that suggest data in motion. The logos are large, confident, and unlabeled — the brands speak for themselves.
+
+**Brand Logos (left to right):**
+1. **IBM Watson Orchestrate** — IBM Watson "w" mark, IBM blue, left anchor
+2. **Elastic Agent Builder** — Elastic "e" logo, Elastic cyan, left-centre
+3. **Elasticsearch** — Elastic "e" logo, slightly larger or with a distinct glow, right-centre — this is the data store and should feel weighty
+4. **ServiceNow** — ServiceNow brand mark, ServiceNow green, right anchor
+
+**Connecting Elements:**
+- A bright, prominent glowing beam or light trail between Watson Orchestrate and Elastic Agent Builder — this is the MCP connection and the visual hero of the image; it should be the brightest, most vivid element
+- Softer, thinner light trails connecting Agent Builder → Elasticsearch and Elasticsearch → ServiceNow
+- The overall effect should read as a single flowing pipeline, not a grid of boxes
+
+**Supporting Element:**
+A small AWS EC2 icon, muted and unobtrusive, sits below the Elasticsearch logo with a faint upward light thread connecting them — present but subordinate, conveying infrastructure without competing with the main flow.
+
+**Mood:**
+Cinematic dark tech. Think product launch graphic, not whiteboard diagram. Clean, confident, with depth and luminosity. No text, no labels, no arrows with heads, no boxes or borders around logos.

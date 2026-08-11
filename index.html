@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic ServiceNow Search: IBM Orchestrate via MCP + Elastic</title>
+<style>
+  :root {
+    --bg: #0D1117;
+    --panel: #161B22;
+    --border: #30363D;
+    --text: #E6EDF3;
+    --muted: #8B949E;
+    --elastic: #00BFB3;
+    --elastic-bright: #22D3EE;
+    --ibm: #4589FF;
+    --snow: #62D84E;
+    --aws: #FF9900;
+    --amber: #FEC514;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;      /* cluster content vertically */
+    gap: 1vh;
+    padding: 3.2vh 4vw 9vh 4vw;   /* bottom padding clears the controls */
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
+
+  /* ---------- typography ---------- */
+  h1 { font-size: clamp(1.6rem, 3.6vw, 2.9rem); line-height: 1.15; }
+  h2 { font-size: clamp(1.2rem, 2.4vw, 1.9rem); margin-bottom: 1.6vh;
+       color: var(--elastic-bright); font-weight: 600; }
+  h2 .kicker { display: block; font-size: 0.55em; color: var(--muted);
+       font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.3em; }
+  p, li { font-size: clamp(0.85rem, 1.45vw, 1.12rem); line-height: 1.5; }
+  code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+  code { background: var(--panel); border: 1px solid var(--border); border-radius: 4px;
+       padding: 0.08em 0.35em; font-size: 0.92em; color: var(--elastic-bright); }
+  pre { background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+       padding: 1.2vh 1.2vw; font-size: clamp(0.62rem, 1.05vw, 0.85rem);
+       line-height: 1.45; overflow: hidden; color: #C9D1D9; }
+  pre .c  { color: var(--muted); }
+  pre .k  { color: var(--elastic-bright); }
+  pre .s  { color: var(--amber); }
+  pre .g  { color: var(--snow); }
+
+  ul.checks { list-style: none; }
+  ul.checks li { padding-left: 1.6em; position: relative; margin-bottom: 1.4vh; }
+  ul.checks li::before { content: "▸"; position: absolute; left: 0.2em; color: var(--elastic); }
+
+  .accent-e { color: var(--elastic-bright); font-weight: 600; }
+  .accent-i { color: var(--ibm); font-weight: 600; }
+  .accent-s { color: var(--snow); font-weight: 600; }
+  .accent-a { color: var(--aws); font-weight: 600; }
+  .muted { color: var(--muted); }
+
+  /* ---------- layout helpers ---------- */
+  .banner { align-self: center; max-width: 100%; max-height: 24vh; object-fit: contain;
+       border-radius: 10px; border: 1px solid var(--border); margin-bottom: 2vh; }
+  .cols { display: flex; gap: 2.4vw; flex: 0 1 auto; min-height: 0; align-items: center; }
+  .col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+       padding: 2vh 1.6vw; }
+  .fill { flex: 0 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+
+  table { border-collapse: collapse; width: 100%;
+       font-size: clamp(0.68rem, 1.15vw, 0.95rem); }
+  th, td { border: 1px solid var(--border); padding: 0.7vh 0.8vw; text-align: left; }
+  th { background: var(--panel); color: var(--elastic-bright); font-weight: 600; }
+  td { color: var(--text); }
+  tr td:first-child { color: var(--amber); white-space: nowrap; }
+
+  /* ---------- slide 1 (title) ---------- */
+  .title-slide { justify-content: center; align-items: center; text-align: center; gap: 2.6vh; }
+  .title-slide img { width: min(72vw, 900px); max-height: 40vh; object-fit: contain;
+       border-radius: 12px; }
+  .title-slide .sub { font-size: clamp(0.95rem, 1.8vw, 1.35rem); color: var(--muted);
+       max-width: 62ch; }
+  .brandline { display: flex; gap: 2.2vw; font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+       color: var(--muted); }
+
+  /* ---------- flow pills ---------- */
+  .flow { display: flex; align-items: center; justify-content: center; gap: 0.9vw;
+       flex-wrap: wrap; margin: 1.2vh 0; }
+  .pill { border: 1px solid var(--border); background: var(--panel); border-radius: 999px;
+       padding: 0.8vh 1.3vw; font-size: clamp(0.72rem, 1.25vw, 1rem); white-space: nowrap; }
+  .pill.e { border-color: var(--elastic); }
+  .pill.i { border-color: var(--ibm); }
+  .pill.s { border-color: var(--snow); }
+  .pill.a { border-color: var(--aws); }
+  .arrow { color: var(--muted); font-size: clamp(0.9rem, 1.6vw, 1.3rem); }
+
+  /* ---------- controls ---------- */
+  .controls { position: fixed; bottom: 2.2vh; right: 2vw; display: flex; gap: 0.6vw;
+       align-items: center; z-index: 10; }
+  .controls button { background: var(--panel); color: var(--text); border: 1px solid var(--border);
+       border-radius: 8px; width: 44px; height: 38px; font-size: 1.05rem; cursor: pointer; }
+  .controls button:hover { border-color: var(--elastic); color: var(--elastic-bright); }
+  .counter { position: fixed; bottom: 2.6vh; left: 2vw; color: var(--muted);
+       font-size: 0.85rem; z-index: 10; }
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--elastic);
+       transition: width 0.25s ease; z-index: 10; }
+</style>
+</head>
+<body>
+
+<!-- 1 · Title -->
+<section class="slide title-slide active">
+  <img src="assets/images/cover.png" alt="Cover">
+  <h1>Agentic ServiceNow Search:<br>IBM Orchestrate via MCP + Elastic</h1>
+  <p class="sub">Natural-language search over ServiceNow — no keywords, no custom integration code.</p>
+  <div class="brandline">
+    <span><span class="accent-i">IBM watsonx Orchestrate</span> · MCP host</span>
+    <span><span class="accent-e">Elastic Agent Builder</span> · MCP server</span>
+    <span><span class="accent-s">ServiceNow</span> · data source</span>
+  </div>
+</section>
+
+<!-- 2 · Why this matters -->
+<section class="slide">
+  <h2><span class="kicker">Business Value</span>Why This Matters</h2>
+  <div class="fill">
+    <ul class="checks" style="max-width: 68vw;">
+      <li><strong>Faster incident resolution</strong> — agents find the right ServiceNow record from a plain-English description. No ticket number, no exact keyword.</li>
+      <li><strong>Zero integration code</strong> — MCP connects <span class="accent-i">Orchestrate</span> to <span class="accent-e">Elastic's</span> search tool out of the box. No custom API glue, no middleware.</li>
+      <li><strong>Semantic understanding over keyword matching</strong> — queries that share <em>no words</em> with the indexed text still return the correct results.</li>
+      <li><strong>Everything as code</strong> — one Terraform run builds the full stack; one destroys it. The entire demo is a reproducible Jupyter notebook.</li>
+    </ul>
+    <div class="flow" style="margin-top: 3vh;">
+      <span class="pill i">Watson Orchestrate</span><span class="arrow">→ MCP →</span>
+      <span class="pill e">Agent Builder</span><span class="arrow">→ ES|QL →</span>
+      <span class="pill e">Elasticsearch</span><span class="arrow">←</span>
+      <span class="pill a">Connector / EC2</span><span class="arrow">←</span>
+      <span class="pill s">ServiceNow</span>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Architecture -->
+<section class="slide">
+  <h2><span class="kicker">The Stack</span>Architecture</h2>
+  <div class="cols">
+    <div class="col" style="flex: 1.5; align-items: center;">
+      <img src="assets/images/arch.png" alt="Architecture diagram"
+           style="max-width: 100%; max-height: 62vh; object-fit: contain; border-radius: 10px; border: 1px solid var(--border);">
+    </div>
+    <div class="col">
+      <ul class="checks">
+        <li><span class="accent-i">Orchestrate</span> hosts the agent; reaches Elastic over <strong>MCP / Streamable HTTP</strong> with basic auth</li>
+        <li><span class="accent-e">Agent Builder</span> exposes an ES|QL tool via its MCP server</li>
+        <li><span class="accent-e">Elastic Serverless</span> (aws-eu-west-2) holds the ServiceNow index with <code>semantic_text</code> mappings</li>
+        <li><span class="accent-a">Self-managed connector</span> — Docker on EC2, singleton ASG, <strong>outbound-only</strong>: zero inbound rules, no SSH, self-healing</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · Provisioning -->
+<section class="slide">
+  <h2><span class="kicker">Step 1</span>Provisioning — Terraform End to End</h2>
+  <img class="banner" src="assets/images/section1.png" alt="Provisioning">
+  <div class="fill">
+    <table>
+      <tr><th>Module</th><th>Creates</th></tr>
+      <tr><td>elastic_serverless</td><td>Elastic Serverless Elasticsearch project in <code>aws-eu-west-2</code></td></tr>
+      <tr><td>aws_network</td><td>Egress-only security group (TCP 443 out) on the default VPC — <strong>no inbound rules</strong></td></tr>
+      <tr><td>connector_agent</td><td>EC2 launch template + singleton ASG; user_data runs the connector Docker image</td></tr>
+      <tr><td>servicenow_connector</td><td>Connector registration + config, index with <code>semantic_text</code> mappings, scoped API key</td></tr>
+    </table>
+    <p class="muted" style="margin-top: 1.6vh;">One <code>terraform apply</code> builds everything; all outputs land in <code>.env</code> for the notebook. Teardown is one <code>terraform destroy</code>.</p>
+  </div>
+</section>
+
+<!-- 5 · Ingest -->
+<section class="slide">
+  <h2><span class="kicker">Step 2</span>Ingest — Outbound-Only Connector Sync</h2>
+  <div class="cols">
+    <div class="col">
+      <ul class="checks">
+        <li>Notebook posts a sync job; the <span class="accent-a">EC2 connector</span> polls Elasticsearch and claims it</li>
+        <li>Connector pulls <span class="accent-s">Incidents, Knowledge, Change Requests, Requested Items</span> from the ServiceNow PDI</li>
+        <li>Records bulk-index into <code>search-servicenow-demo</code></li>
+        <li><code>semantic_text</code> fields are <strong>vectorised automatically</strong> at index time by the <code>.jina-embeddings-v5-text-small</code> inference endpoint</li>
+        <li>The connector host is <strong>dark to the Internet</strong> — every connection is outbound on 443</li>
+      </ul>
+    </div>
+    <div class="col panel" style="justify-content: center;">
+      <pre>
+<span class="c"># trigger an on-demand full sync</span>
+<span class="k">POST</span> /_connector/_sync_job
+{ <span class="s">"id"</span>: <span class="s">"$CONNECTOR_ID"</span>, <span class="s">"job_type"</span>: <span class="s">"full"</span> }
+
+<span class="c"># poll until completed, then verify</span>
+<span class="k">GET</span> /search-servicenow-demo/_count
+<span class="g">→ 46 documents indexed</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · Semantic query, direct -->
+<section class="slide">
+  <h2><span class="kicker">Step 3</span>Semantic Query — Direct to Elasticsearch</h2>
+  <img class="banner" src="assets/images/section4.png" alt="Semantic query">
+  <div class="cols">
+    <div class="col panel" style="justify-content: center;">
+      <pre>
+<span class="k">FROM</span> search-servicenow-demo <span class="k">METADATA</span> _score
+| <span class="k">WHERE</span> <span class="g">MATCH</span>(short_description, <span class="s">?query</span>)
+     <span class="k">OR</span> <span class="g">MATCH</span>(description, <span class="s">?query</span>)
+| <span class="k">SORT</span> _score <span class="k">DESC</span> | <span class="k">LIMIT</span> 5
+
+<span class="c">query = "people cannot log in
+         to company systems"</span></pre>
+    </div>
+    <div class="col">
+      <p style="margin-bottom: 1.2vh;">The query shares <strong>zero keywords</strong> with the results — this is pure semantic ranking:</p>
+      <table>
+        <tr><th>number</th><th>short_description</th><th>_score</th></tr>
+        <tr><td>INC0009003</td><td>Cannot sign into the company portal app</td><td>1.6119</td></tr>
+        <tr><td>INC0000046</td><td>Can't access SFA software</td><td>1.5302</td></tr>
+        <tr><td>INC0010014</td><td>Account lockout after directory sync discrepancy</td><td>1.5265</td></tr>
+        <tr><td>INC0000044</td><td>Can't log into SAP from my laptop today</td><td>1.5148</td></tr>
+      </table>
+      <p class="muted" style="margin-top: 1.2vh;">BM25 keyword search would miss every one of these.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · Tool in Agent Builder -->
+<section class="slide">
+  <h2><span class="kicker">Step 4</span>Create &amp; Verify the ES|QL Tool</h2>
+  <img class="banner" src="assets/images/section5.png" alt="ES|QL tool">
+  <div class="cols">
+    <div class="col">
+      <ul class="checks">
+        <li>Register <code>search_servicenow</code> as an <strong>ES|QL tool</strong> in Kibana Agent Builder via REST</li>
+        <li>Execute it directly with <code>_execute</code> — no MCP, no agent — to confirm hits and latency first</li>
+        <li>This output is the <strong>ground truth</strong> the agentic path must reproduce</li>
+      </ul>
+    </div>
+    <div class="col panel" style="justify-content: center;">
+      <pre>
+<span class="k">POST</span> /api/agent_builder/tools        <span class="c"># register</span>
+<span class="k">POST</span> /api/agent_builder/tools/_execute
+{ <span class="s">"tool_id"</span>: <span class="s">"search_servicenow"</span>,
+  <span class="s">"tool_params"</span>: { <span class="s">"query"</span>: <span class="s">"…"</span> } }
+
+<span class="g">→ same 5 incidents, ranked identically</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · Wire Orchestrate -->
+<section class="slide">
+  <h2><span class="kicker">Step 5</span>Wire Orchestrate — Connection → Toolkit → Agent</h2>
+  <img class="banner" src="assets/images/section6.png" alt="Wire Orchestrate">
+  <div class="cols">
+    <div class="col panel" style="justify-content: center;">
+      <pre>
+orchestrate <span class="k">connections</span> configure -a elastic_mcp \
+  -k basic -u <span class="s">"$MCP_SERVER_URL"</span>
+orchestrate <span class="k">toolkits</span> add -k mcp \
+  -n elastic-agent-builder \
+  --transport <span class="g">streamable_http</span> -t <span class="s">'*'</span>
+orchestrate <span class="k">agents</span> import -f agent.yaml</pre>
+    </div>
+    <div class="col">
+      <ul class="checks">
+        <li>The toolkit points at <code>KIBANA_URL/api/agent_builder/mcp</code> — Elastic's MCP server</li>
+        <li>Tools are <strong>discovered live over MCP</strong> — the tool name never appears in any Orchestrate config</li>
+        <li><code>agent.yaml</code> binds the toolkit; instructions force tool use — the agent never answers from LLM knowledge</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · Proof -->
+<section class="slide">
+  <h2><span class="kicker">Step 6</span>The Proof — Same Question, Agentic Path</h2>
+  <img class="banner" src="assets/images/section7.png" alt="Ask via Orchestrate">
+  <div class="cols">
+    <div class="col panel" style="justify-content: center;">
+      <pre>
+$ orchestrate chat ask --include-reasoning \
+    <span class="s">"people cannot log in to company systems"</span>
+
+<span class="c">🧠 Reasoning Trace</span>
+<span class="g">Step 1: Called tool
+  'elastic-agent-builder__search_servicenow'</span>
+<span class="g">Step 2: Tool responded → 5 incidents</span></pre>
+    </div>
+    <div class="col">
+      <ul class="checks">
+        <li>The reasoning trace shows the <strong>MCP tool call</strong> — proof the answer came from Elastic, not the LLM</li>
+        <li>Results <strong>match the direct query exactly</strong> — same incidents, same ranking</li>
+        <li>End-to-end: <span class="accent-i">Orchestrate</span> → MCP → <span class="accent-e">Agent Builder</span> → ES|QL → <span class="accent-s">ServiceNow index</span> → back</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · Takeaways -->
+<section class="slide">
+  <h2><span class="kicker">Summary</span>Takeaways</h2>
+  <div class="fill">
+    <ul class="checks" style="max-width: 70vw;">
+      <li><span class="accent-e">Elastic</span> connects to <span class="accent-s">ServiceNow</span> out of the box via the self-managed connector — no custom ETL required</li>
+      <li>MCP-based tools in <span class="accent-e">Elastic Agent Builder</span> enforce <strong>deterministic tool use</strong> from agents</li>
+      <li><span class="accent-i">IBM Orchestrate</span> connects to Elastic via MCP — natural-language ServiceNow search with <strong>no custom API integration</strong></li>
+      <li>The entire stack is <strong>reproducible</strong>: Terraform + a Jupyter notebook, from zero to agentic search and back</li>
+    </ul>
+    <div class="panel" style="margin-top: 3.4vh; max-width: 70vw;">
+      <p><strong>Source &amp; full walkthrough</strong> — <span class="accent-e">github.com/joeywhelan/orchestrate-relay</span></p>
+      <p class="muted">Terraform modules · demo.ipynb · agent.yaml · ES|QL tool definition</p>
+    </div>
+  </div>
+</section>
+
+<div class="progress" id="progress"></div>
+<div class="counter" id="counter">1 / 10</div>
+<div class="controls">
+  <button id="prev" aria-label="Previous slide">‹</button>
+  <button id="next" aria-label="Next slide">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let idx = 0;
+  function show(n) {
+    idx = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('counter').textContent = (idx + 1) + ' / ' + slides.length;
+    document.getElementById('progress').style.width = ((idx + 1) / slides.length * 100) + '%';
+    history.replaceState(null, '', '#' + (idx + 1));
+  }
+  document.getElementById('next').onclick = () => show(idx + 1);
+  document.getElementById('prev').onclick = () => show(idx - 1);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') show(idx + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') show(idx - 1);
+    if (e.key === 'Home') show(0);
+    if (e.key === 'End') show(slides.length - 1);
+  });
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>

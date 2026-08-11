@@ -1,0 +1,15 @@
+# Section 7 — Ask via Orchestrate
+
+A dark-themed technical diagram (900×300px, 3:1 ratio) illustrating the end-to-end agentic query path from IBM Watson Orchestrate through MCP to Elastic and back. Dark charcoal background (#0D1117), vector rendering, no 3D effects.
+
+**Key components (left to right):**
+
+- **Left: Watson Orchestrate node** — IBM Watson "w" logomark in IBM blue, labeled "Watson Orchestrate" and the query string `'people cannot log in to company systems'` in monospaced grey beneath
+- **Arrow** — thick solid horizontal line labeled "MCP / Streamable HTTP" in monospaced grey; this is the most prominent arrow in the diagram
+- **Centre: Elastic Agent Builder node** — Elastic "e" logomark in cyan (#00BFB3), labeled "Agent Builder MCP Server" and "search_servicenow tool call" in monospaced grey; rounded rectangle with faint cyan border glow
+- **Arrow** — solid line flowing right labeled "ES|QL MATCH" in monospaced grey
+- **Right: Elasticsearch index node** — Elastic "e" logomark in a smaller cyan box labeled "search-servicenow-demo"; a small results table stub beneath showing columns `number`, `_score` with faint rows suggesting ranked incidents
+- **Return arrow** — faint dashed line flowing back left from Elasticsearch through Agent Builder to Orchestrate, labeled "ranked results" in monospaced grey
+
+**Design principle:**
+The image communicates the full agentic round-trip: "Watson Orchestrate sends a natural-language query via MCP; Elastic Agent Builder calls the ES|QL tool and returns ranked ServiceNow incidents." The MCP arrow must be visually dominant — it is the architectural centrepiece of the entire demo.

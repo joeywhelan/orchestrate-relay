@@ -1,0 +1,14 @@
+# Section 4 — Semantic Query: Direct to Elasticsearch
+
+A dark-themed technical diagram (900×300px, 3:1 ratio) illustrating a semantic ES|QL query running directly against the Elasticsearch index. Dark charcoal background (#0D1117), vector rendering, no 3D effects.
+
+**Key components (left to right):**
+
+- **Left: Python client node** — Python logomark in blue (#3776AB), labeled "Elasticsearch Python client" and the query string `'people cannot log in to company systems'` in monospaced grey
+- **Arrow** — solid horizontal line labeled "ES|QL MATCH" in monospaced grey
+- **Centre: Elasticsearch index node** — Elastic "e" logomark in cyan (#00BFB3), labeled "search-servicenow-demo" and "semantic_text" in monospaced grey beneath; rounded rectangle with faint cyan border glow
+- **Arrow** — solid line returning left labeled "ranked results" in monospaced grey
+- **Right: Results panel** — muted dark box showing a small table stub: columns `number`, `short_description`, `_score` with two faint rows, suggesting ranked incident results
+
+**Design principle:**
+The image communicates a single query path: "A Python ES|QL query uses MATCH on semantic_text fields to retrieve ranked ServiceNow incidents — no MCP, no agent, direct to the index." The absence of any agent or MCP element is intentional and should be visually clear.

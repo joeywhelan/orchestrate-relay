@@ -1,0 +1,14 @@
+# Section 6 — Wire Orchestrate
+
+A dark-themed technical diagram (900×300px, 3:1 ratio) illustrating the wiring of IBM Watson Orchestrate to Elastic Agent Builder via MCP. Dark charcoal background (#0D1117), vector rendering, no 3D effects.
+
+**Key components (left to right):**
+
+- **Left: ADK CLI node** — IBM Watson "w" logomark in IBM blue, labeled "Watson Orchestrate ADK" and three stacked command labels in monospaced grey: "env add", "connections configure", "toolkits add", "agents import"
+- **Arrow** — solid horizontal line labeled "MCP / basic auth" in monospaced grey
+- **Centre: Elastic Agent Builder node** — Elastic "e" logomark in cyan (#00BFB3), labeled "Agent Builder MCP Server" and "elastic-agent-builder toolkit" in monospaced grey; rounded rectangle with faint cyan border glow
+- **Arrow** — solid line flowing right labeled "ES|QL tool" in monospaced grey
+- **Right: Agent node** — small rounded rectangle in IBM blue labeled "servicenow_search agent" with "search_servicenow tool" in monospaced grey beneath, suggesting the tool is now bound to the agent at runtime
+
+**Design principle:**
+The image communicates a single wiring step: "The ADK CLI registers an MCP connection and toolkit pointing at Elastic Agent Builder, then imports the agent that binds to it — after this step, the agent can call search_servicenow via MCP at query time."

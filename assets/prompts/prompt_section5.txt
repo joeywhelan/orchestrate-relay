@@ -1,0 +1,14 @@
+# Section 5 — Create & Verify ES|QL Search Tool
+
+A dark-themed technical diagram (900×300px, 3:1 ratio) illustrating the registration and direct verification of an ES|QL tool in Kibana Agent Builder. Dark charcoal background (#0D1117), vector rendering, no 3D effects.
+
+**Key components (left to right):**
+
+- **Left: Python/requests node** — Python logomark in blue (#3776AB), labeled "requests.post" and "POST /api/agent_builder/tools" in monospaced grey
+- **Arrow** — solid horizontal line labeled "register tool" in monospaced grey
+- **Centre: Kibana Agent Builder node** — Elastic "e" logomark in cyan (#00BFB3), labeled "Kibana Agent Builder" and "search_servicenow (ES|QL)" in monospaced grey; rounded rectangle with faint cyan border glow
+- **Arrow** — solid line flowing right labeled "_execute" in monospaced grey
+- **Right: Elasticsearch index node** — Elastic "e" logomark in a smaller muted cyan box, labeled "search-servicenow-demo"; a small results table stub beneath showing columns `number`, `_score` with faint rows
+
+**Design principle:**
+The image communicates two sequential actions: "Register the ES|QL tool in Kibana Agent Builder, then execute it directly to verify results — no MCP involved." The direct execution arrow from Kibana to Elasticsearch should make clear this is a verification step before any agent wiring.

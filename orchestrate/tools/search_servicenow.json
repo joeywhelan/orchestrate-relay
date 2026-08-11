@@ -1,0 +1,15 @@
+{
+  "id": "search_servicenow",
+  "type": "esql",
+  "tags": ["servicenow"],
+  "description": "Search indexed ServiceNow records (incidents, knowledge articles, change requests, requested items) by natural-language description. Returns the top 5 most semantically relevant records.",
+  "configuration": {
+    "query": "FROM search-servicenow-demo METADATA _score | WHERE (MATCH(short_description, ?query) OR MATCH(description, ?query)) AND sys_class_name == \"incident\" | KEEP number, sys_class_name, short_description, state, _score | SORT _score DESC | LIMIT 5",
+    "params": {
+      "query": {
+        "type": "string",
+        "description": "The user's natural-language question used to find matching ServiceNow records."
+      }
+    }
+  }
+}

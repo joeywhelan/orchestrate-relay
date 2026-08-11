@@ -1,0 +1,16 @@
+# Section 1 — Provisioning
+
+A dark-themed technical diagram (900×300px, 3:1 ratio) illustrating the Terraform provisioning flow for the full stack. Dark charcoal background (#0D1117), vector rendering, no 3D effects.
+
+**Key components (left to right):**
+
+- **Left: Terraform node** — HashiCorp Terraform logomark in purple (#7B42BC), labeled "Terraform" and "terraform apply"
+- **Arrow** — solid horizontal line labeled "provisions" in monospaced grey
+- **Centre: Elastic Serverless box** — Elastic "e" logomark in cyan (#00BFB3), labeled "Elastic Serverless" and "aws-eu-west-2"; rounded rectangle with faint cyan border glow
+- **Arrow** — solid line flowing downward or rightward labeled "registers connector"
+- **Right: AWS box** — AWS logomark in orange (#FF9900) inside a muted dashed rounded rectangle representing the AWS boundary, containing two sub-elements stacked vertically:
+  - EC2 icon labeled "Connector / EC2" in muted grey
+  - Small Docker whale icon labeled "elastic-connectors:9.4.3" in muted grey beneath it
+
+**Design principle:**
+The image communicates a single provisioning flow: "Terraform builds an Elastic Serverless project and deploys the self-managed ServiceNow connector onto an AWS EC2 instance." All connections are outbound from EC2; no inbound arrow touches the AWS box.

@@ -1,0 +1,23 @@
+# Summary
+
+The request presents a detailed specification for creating an architecture diagram for a semantic ServiceNow search pipeline built on IBM Watson Orchestrate, Elastic Agent Builder, and a self-managed Elastic connector on AWS EC2.
+
+**Primary Focus:** Visualize the end-to-end agentic query path where "IBM Watson Orchestrate issues a natural-language query, which is routed via MCP over Streamable HTTP to the Elastic Agent Builder MCP server, which executes an ES|QL search against a ServiceNow index in Elastic Serverless, returning semantically ranked incidents back through the same chain."
+
+**Key Structural Elements:**
+- IBM Watson Orchestrate as the MCP host and agent runtime at the top of the diagram
+- Elastic Agent Builder MCP server as the central hub, receiving tool calls and issuing ES|QL queries
+- Elastic Serverless project (aws-eu-west-2) containing the ServiceNow index with `semantic_text` mappings and the `.jina-embeddings-v5-text-small` inference endpoint
+- Self-managed Elastic connector service running in Docker on an EC2 instance inside a singleton Auto Scaling Group, connected to both Elasticsearch and ServiceNow
+- ServiceNow PDI as the data source at the bottom of the diagram
+
+**Visual Approach:** Dark-themed diagram (1200×800px) with a top-to-bottom query flow and a separate bottom-to-top ingest flow shown as a parallel path on the right. Use blue for IBM Watson Orchestrate components, cyan for Elastic components (Agent Builder, Serverless, index), amber for ServiceNow, and muted grey for the EC2 connector and AWS infrastructure boundary. A dashed box outlines the AWS boundary around the EC2 connector. Official brand marks and logos are permitted and encouraged for each product: IBM Watson "w" mark, Elastic "e" logo, ServiceNow brand mark, and AWS logo.
+
+**Connection Labels:**
+- Orchestrate → Agent Builder: "MCP / Streamable HTTP / basic auth" (thick cyan arrow)
+- Agent Builder → Elastic Serverless: "ES|QL query" (cyan arrow)
+- Elastic Serverless → Agent Builder: "ranked results" (return path, thinner)
+- Connector → Elastic Serverless: "bulk index / outbound only" (grey arrow pointing FROM the Connector node TO the Elastic Serverless node, travelling upward; the arrowhead is at the Elastic Serverless end)
+- ServiceNow → Connector: "REST / pull" (grey arrow pointing FROM the ServiceNow node TO the Connector node, travelling upward; the arrowhead is at the Connector end — the connector initiates the connection outbound to ServiceNow but data flows back into the connector)
+
+**Exclusions:** Do not add any legend, legend box, caption box, footnote, key takeaways box, architectural centrepiece box, callout box, or any other explanatory text block anywhere in the diagram. No "MCP over …", no "Note:", no "Key Takeaways:", no "The Architectural Centrepiece", no "End Result", no colour key. The diagram must contain only nodes, connection arrows with their labels, and boundary boxes. Nothing else.
